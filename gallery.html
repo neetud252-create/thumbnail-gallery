@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: transparent;
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      background: #fff;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-info { padding: 8px 10px 10px; }
+    .card-caption {
+      font-size: 0.82rem;
+      color: #333;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-date { font-size: 0.74rem; color: #999; }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+    .lightbox-close {
+      position: absolute; top: 14px; right: 18px;
+      font-size: 2rem; color: #fff;
+      cursor: pointer; line-height: 1;
+    }
+
+    .status {
+      text-align: center;
+      color: #aaa;
+      padding: 40px 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid" id="grid">
+    <p class="status">Loading...</p>
+  </div>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <script>
+    // !! IMPORTANT: Replace this with your Railway bot service URL after deploying !!
+    // Example: https://thumbnail-bot-production.up.railway.app/api/thumbnails
+    const RAILWAY_API = 'https://YOUR-BOT-SERVICE.up.railway.app/api/thumbnails';
+
+    async function load() {
+      const grid = document.getElementById('grid');
+      try {
+        const res   = await fetch(RAILWAY_API);
+        const items = await res.json();
+
+        if (!items.length) {
+          grid.innerHTML = '<p class="status">No thumbnails published yet.</p>';
+          return;
+        }
+
+        grid.innerHTML = items.map(item => `
+          <div class="card" onclick="openLightbox('${item.image_url}')">
+            <img src="${item.thumb_url}" alt="${item.caption || ''}" loading="lazy">
+            <div class="card-info">
+              ${item.caption ? `<div class="card-caption">${item.caption}</div>` : ''}
+              <div class="card-date">${fmt(item.show_at)}</div>
+            </div>
+          </div>
+        `).join('');
+      } catch {
+        grid.innerHTML = '<p class="status">Could not load gallery.</p>';
+      }
+    }
+
+    function fmt(iso) {
+      return new Date(iso).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', hour12: true,
+      });
+    }
+
+    function openLightbox(url) {
+      document.getElementById('lightbox-img').src = url;
+      document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+
+    load();
+    setInterval(load, 60000);
+  </script>
+</body>
+</html>
