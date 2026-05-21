@@ -5,190 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThumX Gallery</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: transparent;
-      padding: 12px;
-      color: #222;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .header-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #444;
-      letter-spacing: 0.5px;
-    }
-    .header-count {
-      font-size: 0.75rem;
-      color: #999;
-      background: #f5f5f5;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 10px;
-    }
-
-    .card {
-      border: 1px solid #ececec;
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-      background: #fff;
-      position: relative;
-    }
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    }
-
-    .card img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      display: block;
-    }
-
-    .card-badge {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      background: rgba(0,0,0,0.55);
-      color: #fff;
-      font-size: 0.62rem;
-      padding: 2px 6px;
-      border-radius: 20px;
-      backdrop-filter: blur(4px);
-    }
-
-    .card-info { padding: 7px 9px 9px; }
-    .card-caption {
-      font-size: 0.78rem;
-      color: #222;
-      font-weight: 500;
-      margin-bottom: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .card-date {
-      font-size: 0.7rem;
-      color: #aaa;
-    }
-
-    /* Lightbox */
-    .lightbox {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.88);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      padding: 20px;
-      flex-direction: column;
-      gap: 12px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #fff; padding: 16px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+    .header-title { font-size: 0.85rem; font-weight: 600; color: #444; letter-spacing: 0.5px; }
+    .badge { font-size: 0.75rem; color: #999; background: #f5f5f5; padding: 2px 8px; border-radius: 20px; }
+    .card { border: 1px solid #ececec; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; background: #fff; max-width: 340px; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+    .card-info { padding: 10px 12px 12px; }
+    .card-caption { font-size: 0.85rem; color: #222; font-weight: 500; margin-bottom: 4px; }
+    .card-date { font-size: 0.75rem; color: #aaa; }
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .lightbox.open { display: flex; }
-    .lightbox img {
-      max-width: 90vw;
-      max-height: 80vh;
-      border-radius: 10px;
-      object-fit: contain;
-    }
-    .lightbox-caption {
-      color: #eee;
-      font-size: 0.9rem;
-      text-align: center;
-    }
-    .lightbox-close {
-      position: absolute; top: 14px; right: 18px;
-      font-size: 1.8rem; color: #fff;
-      cursor: pointer; line-height: 1;
-      opacity: 0.8;
-    }
-    .lightbox-close:hover { opacity: 1; }
-
-    .status {
-      text-align: center;
-      color: #bbb;
-      padding: 32px 0;
-      font-size: 0.85rem;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 14px;
-      font-size: 0.68rem;
-      color: #ccc;
-    }
+    .lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 10px; object-fit: contain; }
+    .lightbox-close { position: absolute; top: 14px; right: 18px; font-size: 1.8rem; color: #fff; cursor: pointer; }
+    .status { text-align: center; color: #bbb; padding: 32px 0; font-size: 0.85rem; }
+    .footer { text-align: center; margin-top: 14px; font-size: 0.68rem; color: #ccc; }
   </style>
 </head>
 <body>
-
   <div class="header">
     <span class="header-title">GALLERY</span>
-    <span class="header-count" id="count">Loading...</span>
+    <span class="badge" id="badge">Loading...</span>
   </div>
 
-  <div class="grid" id="grid">
-    <p class="status">Loading gallery...</p>
-  </div>
+  <div id="content"><p class="status">Loading...</p></div>
 
-  <div class="footer">© <span id="year"></span> ThumX &nbsp;·&nbsp; Auto-refreshes every 60s</div>
+  <div class="footer">© <span id="year"></span> ThumX · Auto-refreshes every 60s</div>
 
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <span class="lightbox-close">&times;</span>
     <img id="lightbox-img" src="" alt="">
-    <div class="lightbox-caption" id="lightbox-caption"></div>
   </div>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // !! Replace with your Railway bot service URL !!
-    const RAILWAY_API = 'https://thumbnail-bot-production.up.railway.app/api/latest';
+    // Reads directly from GitHub — no API call, works on ALL devices!
+    const DATA_URL = 'https://raw.githubusercontent.com/neetud252-create/thumbnail-gallery/main/data.json?t=' + Date.now();
 
     async function load() {
-      const grid  = document.getElementById('grid');
-      const count = document.getElementById('count');
+      const content = document.getElementById('content');
+      const badge   = document.getElementById('badge');
       try {
-        const res   = await fetch(RAILWAY_API);
-        const items = await res.json();
+        const res  = await fetch('https://raw.githubusercontent.com/neetud252-create/thumbnail-gallery/main/data.json?t=' + Date.now());
+        const item = await res.json();
 
-        count.textContent = `${items.length} image${items.length !== 1 ? 's' : ''}`;
-
-        if (!items.length) {
-          grid.innerHTML = '<p class="status">No thumbnails published yet.</p>';
+        if (!item || !item.image_url) {
+          content.innerHTML = '<p class="status">No thumbnail published yet.</p>';
+          badge.textContent = '0 images';
           return;
         }
 
-        grid.innerHTML = items.map((item, i) => `
-          <div class="card" onclick="openLightbox('${item.image_url}', '${(item.caption||'').replace(/'/g,"\\'")}')">
+        badge.textContent = '1 image';
+        content.innerHTML = `
+          <div class="card" onclick="openLightbox('${item.image_url}')">
             <img src="${item.thumb_url}" alt="${item.caption || 'Thumbnail'}" loading="lazy">
-            <div class="card-badge">#${i + 1}</div>
             <div class="card-info">
               ${item.caption ? `<div class="card-caption">${item.caption}</div>` : ''}
               <div class="card-date">${fmt(item.show_at)}</div>
             </div>
           </div>
-        `).join('');
+        `;
       } catch(e) {
-        count.textContent = 'Error';
-        grid.innerHTML = '<p class="status">Could not load gallery.</p>';
+        content.innerHTML = '<p class="status">Could not load gallery.</p>';
+        badge.textContent = 'Error';
       }
     }
 
@@ -199,9 +81,8 @@
       });
     }
 
-    function openLightbox(url, caption) {
+    function openLightbox(url) {
       document.getElementById('lightbox-img').src = url;
-      document.getElementById('lightbox-caption').textContent = caption || '';
       document.getElementById('lightbox').classList.add('open');
     }
     function closeLightbox() {
