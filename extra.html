@@ -35,18 +35,20 @@
     <img id="lightbox-img" src="" alt="">
   </div>
   <script>
-    var CHANNEL = 'extra';
-    var CLOUD   = 'dvgpkwko2';
-    var NAMES   = { nord: 'NORDVPN', host: 'HOSTINGER', helium: 'HELIUM', extra: 'EXTRA' };
+    var CHANNEL  = 'extra';
+    var REPO     = 'neetud252-create/thumbnail-gallery';
+    var NAMES    = { nord: 'NORDVPN', host: 'HOSTINGER', helium: 'HELIUM', extra: 'EXTRA' };
+    var FILES    = { nord: 'latest-nord.jpg', host: 'latest-host.jpg', helium: 'latest-helium.jpg', extra: 'latest-extra.jpg' };
 
     document.getElementById('year').textContent = new Date().getFullYear();
     document.getElementById('page-title').textContent = NAMES[CHANNEL] + ' GALLERY';
 
     function load() {
-      var t = Date.now();
-      var THUMB = 'https://res.cloudinary.com/' + CLOUD + '/image/upload/w_1280,h_720,c_fill,f_auto,q_100/thumbnails/latest-' + CHANNEL + '?t=' + t;
-      var FULL  = 'https://res.cloudinary.com/' + CLOUD + '/image/upload/f_auto,q_100/thumbnails/latest-' + CHANNEL + '?t=' + t;
+      var t    = Date.now();
+      var file = FILES[CHANNEL];
+      var IMG_URL = 'https://raw.githubusercontent.com/' + REPO + '/main/images/' + file + '?t=' + t;
       var content = document.getElementById('content');
+
       var img = new Image();
       img.onload = function() {
         var date = new Date().toLocaleString('en-IN', {
@@ -55,23 +57,19 @@
           timeZone: 'Asia/Kolkata'
         });
         content.innerHTML = '<div class="card" onclick="openLightbox()">' +
-          '<img src="' + THUMB + '" alt="Thumbnail">' +
+          '<img src="' + IMG_URL + '" alt="Thumbnail">' +
           '<div class="card-info"><div class="card-date">' + date + '</div></div>' +
           '</div>';
-        document.getElementById('lightbox-img').src = FULL;
+        document.getElementById('lightbox-img').src = IMG_URL;
       };
       img.onerror = function() {
         content.innerHTML = '<p class="status">No thumbnail published yet.</p>';
       };
-      img.src = THUMB;
+      img.src = IMG_URL;
     }
 
-    function openLightbox() {
-      document.getElementById('lightbox').classList.add('open');
-    }
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('open');
-    }
+    function openLightbox() { document.getElementById('lightbox').classList.add('open'); }
+    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
 
     load();
     setInterval(load, 60000);
