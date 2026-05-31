@@ -15,6 +15,7 @@
     .card img { width: 100%; display: block; }
     .card-info { padding: 10px 12px 12px; }
     .card-date { font-size: 0.75rem; color: #aaa; }
+    .watch-text { margin-top: 6px; font-size: 0.88rem; font-weight: 700; color: #e63946; letter-spacing: 0.3px; }
     .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .lightbox.open { display: flex; }
     .lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 10px; object-fit: contain; }
@@ -25,7 +26,7 @@
 </head>
 <body>
   <div class="header">
-    <span class="header-title" id="page-title">GALLERY</span>
+    <span class="header-title">HOSTINGER GALLERY</span>
     <span class="badge">Latest thumbnail</span>
   </div>
   <div id="content"><p class="status">Loading...</p></div>
@@ -35,18 +36,13 @@
     <img id="lightbox-img" src="" alt="">
   </div>
   <script>
-    var CHANNEL  = 'host';
-    var REPO     = 'neetud252-create/thumbnail-gallery';
-    var NAMES    = { nord: 'NORDVPN', host: 'HOSTINGER', helium: 'HELIUM', extra: 'EXTRA' };
-    var FILES    = { nord: 'latest-nord.jpg', host: 'latest-host.jpg', helium: 'latest-helium.jpg', extra: 'latest-extra.jpg' };
+    var REPO = 'neetud252-create/thumbnail-gallery';
 
     document.getElementById('year').textContent = new Date().getFullYear();
-    document.getElementById('page-title').textContent = NAMES[CHANNEL] + ' GALLERY';
 
     function load() {
-      var t    = Date.now();
-      var file = FILES[CHANNEL];
-      var IMG_URL = 'https://raw.githubusercontent.com/' + REPO + '/main/images/' + file + '?t=' + t;
+      var t       = Date.now();
+      var IMG_URL = 'https://raw.githubusercontent.com/' + REPO + '/main/images/latest-host.jpg?t=' + t;
       var content = document.getElementById('content');
 
       var img = new Image();
@@ -56,9 +52,13 @@
           hour: '2-digit', minute: '2-digit', hour12: true,
           timeZone: 'Asia/Kolkata'
         });
-        content.innerHTML = '<div class="card" onclick="openLightbox()">' +
-          '<img src="' + IMG_URL + '" alt="Thumbnail">' +
-          '<div class="card-info"><div class="card-date">' + date + '</div></div>' +
+        content.innerHTML =
+          '<div class="card" onclick="openLightbox()">' +
+            '<img src="' + IMG_URL + '" alt="Thumbnail">' +
+            '<div class="card-info">' +
+              '<div class="card-date">' + date + '</div>' +
+              '<div class="watch-text">▶ Watch in 1 Minute</div>' +
+            '</div>' +
           '</div>';
         document.getElementById('lightbox-img').src = IMG_URL;
       };
