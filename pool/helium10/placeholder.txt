@@ -1,0 +1,1 @@
+Upload 1.jpg through 10.jpg here (Helium10 thumbnails). Delete this file once you've uploaded them, or just leave it -- it's ignored by the pipeline.
